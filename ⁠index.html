@@ -406,7 +406,8 @@
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
             deferredPrompt = e;
-            document.getElementById('installBanner').style.display = 'flex';
+            const banner = document.getElementById('installBanner');
+            if(banner) banner.style.display = 'flex';
         });
 
         document.getElementById('installBtn')?.addEventListener('click', () => {
@@ -422,7 +423,7 @@
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 const swCode = `
-                    const CACHE_NAME = 'volt-ai-v2';
+                    const CACHE_NAME = 'volt-ai-v3';
                     const urlsToCache = ['./', './index.html'];
                     self.addEventListener('install', e => e.waitUntil(caches.open(CACHE_NAME).then(c => c.addAll(urlsToCache))));
                     self.addEventListener('fetch', e => e.respondWith(caches.match(e.request).then(r => r || fetch(e.request))));
@@ -447,7 +448,11 @@
         function renderHistory() {
             const history = JSON.parse(localStorage.getItem('voltAiHistory')) || [];
             const listEl = document.getElementById('historyList');
-            if (history.length === 0) return;
+            if (!listEl) return;
+            if (history.length === 0) {
+                listEl.innerHTML = '<li class="history-item">لا يوجد سجل عمليات حالياً.</li>';
+                return;
+            }
             listEl.innerHTML = history.map(item => `<li class="history-item">${item}</li>`).join('');
         }
 
@@ -535,7 +540,7 @@
 
             const tan1 = Math.tan(Math.acos(pf1));
             const tan2 = Math.tan(Math.acos(pf2));
-            const Qc = P * (tan1 - tan2); // القدرة غير الفعالة المطلوبة بالمكثفات
+            const Qc = P * (tan1 - tan2);
 
             const resDiv = document.getElementById('pfcResult');
             resDiv.style.display = 'block';
@@ -556,7 +561,7 @@
             if (!val) { alert('يرجى إدخال قدرة المحرك'); return; }
 
             const kW = (unit === 'hp') ? val * 0.746 : val;
-            const FLC = (kW * 1000) / (1.732 * 380 * 0.85 * 0.88); // تيار الحمل الكامل التقريبي
+            const FLC = (kW * 1000) / (1.732 * 380 * 0.85 * 0.88);
             const overload = FLC * 1.15;
             let startMethod = "Direct Online (DOL)";
 
@@ -620,8 +625,17 @@ END_FUNCTION_BLOCK
 
         function copyCode() {
             const code = document.getElementById('aiOutputContent').innerText;
-            navigator.clipboard.writeText(code);
-            alert('تم نسخ النص/الكود بنجاح!');
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(code).then(() => alert('تم نسخ النص/الكود بنجاح!'));
+            } else {
+                const textArea = document.createElement("textarea");
+                textArea.value = code;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                alert('تم نسخ النص/الكود بنجاح!');
+            }
         }
 
         function downloadCodeFile() {
@@ -634,6 +648,10 @@ END_FUNCTION_BLOCK
         }
 
         function downloadPDF() {
+            if (typeof html2pdf === 'undefined') {
+                alert('تنبيه: تحويل PDF يحتاج اتصال بالإنترنت لتحميل المكتبة.');
+                return;
+            }
             const element = document.getElementById('pdfContent');
             const pdfHeader = document.getElementById('pdfHeader');
             const pdfFooter = document.getElementById('pdfFooter');
