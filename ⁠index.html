@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>منصة صانع | مساعد المحتوى الذكي</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --accent-color: #3b82f6;
+            --text-color: #f8fafc;
+            --text-muted: #94a3b8;
+            --success-color: #10b981;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        header {
+            background-color: var(--card-bg);
+            padding: 1rem 2rem;
+            text-align: center;
+            border-bottom: 2px solid #2e3e56;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 2rem;
+            color: var(--accent-color);
+        }
+
+        header p {
+            margin: 0.5rem 0 0;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+            flex: 1;
+        }
+
+        /* مساحة الإعلانات العلنية */
+        .ad-space {
+            background: #243249;
+            border: 1px dashed var(--text-muted);
+            border-radius: 8px;
+            min-height: 90px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .main-card {
+            background-color: var(--card-bg);
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+            font-size: 0.95rem;
+        }
+
+        input[type="text"], select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            background-color: #0f172a;
+            color: var(--text-color);
+            font-size: 1rem;
+            box-sizing: border-box;
+        }
+
+        input[type="text"]:focus, select:focus {
+            outline: none;
+            border-color: var(--accent-color);
+        }
+
+        .btn-generate {
+            width: 100%;
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 1rem;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-generate:hover {
+            background-color: #2563eb;
+        }
+
+        /* أنيميشن التحميل والانتظار */
+        .loading-box {
+            display: none;
+            text-align: center;
+            margin-top: 1.5rem;
+            padding: 1rem;
+            background: #1e293b;
+            border-radius: 8px;
+            border: 1px solid #3b82f6;
+        }
+
+        .spinner {
+            border: 4px solid rgba(255,255,255,0.1);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border-left-color: var(--accent-color);
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin { 
+            0% { transform: rotate(0deg); } 
+            100% { transform: rotate(360deg); } 
+        }
+
+        /* صندوق النتائج */
+        .results-box {
+            display: none;
+            margin-top: 2rem;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn { 
+            from { opacity: 0; transform: translateY(10px); } 
+            to { opacity: 1; transform: translateY(0); } 
+        }
+
+        .result-section {
+            background: #111827;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            border-right: 4px solid var(--accent-color);
+            position: relative;
+        }
+
+        .result-section h3 {
+            margin-top: 0;
+            color: var(--accent-color);
+            font-size: 1.1rem;
+        }
+
+        .result-text {
+            white-space: pre-line;
+            line-height: 1.6;
+            font-size: 0.95rem;
+        }
+
+        .btn-copy {
+            background: #334155;
+            color: var(--text-color);
+            border: none;
+            padding: 0.4rem 0.8rem;
+            font-size: 0.8rem;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 0.5rem;
+        }
+
+        .btn-copy:hover { background: #475569; }
+
+        footer {
+            text-align: center;
+            padding: 1rem;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            background-color: var(--card-bg);
+            border-top: 2px solid #2e3e56;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>منصة صانع ⚡</h1>
+        <p>توليد أفكار وسيناريوهات الفيديوهات القصيرة بالذكاء الاصطناعي</p>
+    </header>
+
+    <div class="container">
+        
+        <!-- [مكان الإعلان العلوي الأول - بانر أدسنس] -->
+        <div class="ad-space">
+            <p>إعلان مستهدف (سيظهر هنا كود إعلانات Google AdSense لاحقاً)</p>
+        </div>
+
+        <div class="main-card">
+            <div class="form-group">
+                <label for="niche">عن ماذا يتحدث مشروعك أو حسابك؟</label>
+                <input type="text" id="niche" placeholder="مثال: لوحات تحكم كهربائية، صيانة هواتف، ملابس شبابية...">
+            </div>
+
+            <div class="form-group">
+                <label for="platform">المنصة المستهدفة:</label>
+                <select id="platform">
+                    <option value="Instagram Reels">إنستغرام ريلز (Instagram Reels)</option>
+                    <option value="TikTok">تيك توك (TikTok)</option>
+                    <option value="YouTube Shorts">يوتيوب شورتس (YouTube Shorts)</option>
+                </select>
+            </div>
+
+            <button class="btn-generate" onclick="generateContent()">توليد المحتوى السحري ✨</button>
+        </div>
+
+        <!-- صندوق الانتظار الذكي -->
+        <div class="loading-box" id="loadingBox">
+            <div class="spinner"></div>
+            <p>جاري استدعاء ذكاء "صانع" لتوليد أفضل الأفكار لك...</p>
+        </div>
+
+        <!-- صندوق ظهور النتائج -->
+        <div class="results-box" id="resultsBox">
+            
+            <div class="result-section">
+                <h3>💡 الأفكار المقترحة للفيديوهات:</h3>
+                <div class="result-text" id="ideasResult"></div>
+                <button class="btn-copy" onclick="copyText('ideasResult')">نسخ الأفكار</button>
+            </div>
+
+            <!-- [مكان الإعلان الأوسط - بين النتائج] -->
+            <div class="ad-space">
+                <p>إعلان مدمج (مكان استراتيجي يحقق نقرات عالية جداً)</p>
+            </div>
+
+            <div class="result-section" style="border-right-color: var(--success-color);">
+                <h3>🎬 السيناريو المكتوب وجاذب الانتباه (Hook):</h3>
+                <div class="result-text" id="scriptResult"></div>
+                <button class="btn-copy" onclick="copyText('scriptResult')">نسخ السيناريو</button>
+            </div>
+
+            <div class="result-section" style="border-right-color: #a855f7;">
+                <h3>🔥 الهاشتاغات الأكثر تفاعلاً (#):</h3>
+                <div class="result-text" id="tagsResult"></div>
+                <button class="btn-copy" onclick="copyText('tagsResult')">نسخ الهاشتاغات</button>
+            </div>
+
+        </div>
+
+    </div>
+
+    <footer>
+        جميع الحقوق محفوظة © منصة صانع 2026
+    </footer>
+
+    <script>
+        function generateContent() {
+            var niche = document.getElementById('niche').value;
+
+            if(!niche) {
+                alert("الرجاء كتابة مجال عملك أولاً!");
+                return;
+            }
+
+            // إخفاء النتائج السابقة وإظهار أنيميشن التحميل
+            document.getElementById('resultsBox').style.display = 'none';
+            document.getElementById('loadingBox').style.display = 'block';
+
+            // محاكاة استدعاء الـ API
+            setTimeout(function() {
+                document.getElementById('loadingBox').style.display = 'none';
+                
+                // نصوص تجريبية لعرض شكل الموقع
+                document.getElementById('ideasResult').innerText = "1. فيديو مقارنة: الفرق بين الشغل التقليدي والشغل الذكي في مجال (" + niche + ").\n2. فيديو حل مشكلة: أكبر غلط يقع بيه المبتدئين في الـ (" + niche + ") وكيف تتجنبه.\n3. فيديو خلف الكواليس: كيف نجهز طلبيات وشغل (" + niche + ") لعملائنا.";
+                
+                document.getElementById('scriptResult').innerText = "• الـ Hook (أول 3 ثوانٍ): \"لو كنت بعدك تسوي هذي الطريقة بـ " + niche + "، فإنت قاعد تخسر وقتك وفلوسك! تعال أقولك الحل..\"\n\n• محتوى الفيديو: تشرح فيه المشكلة بسرعة بأسلوب عملي مشوق.\n\n• الـ CTA (نهاية الفيديو): \"إذا عجبك الفيديو تابع حسابنا واكتبلي بالتعليقات شنو رأيك!\"";
+                
+                document.getElementById('tagsResult').innerText = "#" + niche.replace(/\s+/g, '_') + " #صناعة_المحتوى #تسويق_رقمي #ذكاء_اصطناعي #العراق";
+                
+                document.getElementById('resultsBox').style.display = 'block';
+            }, 3000); // 3 ثواني انتظار
+        }
+
+        function copyText(elementId) {
+            var text = document.getElementById(elementId).innerText;
+            navigator.clipboard.writeText(text);
+            alert("تم نسخ النص بنجاح!");
+        }
+    </script>
+</body>
+</html>
